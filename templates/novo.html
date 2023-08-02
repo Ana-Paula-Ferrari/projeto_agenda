@@ -1,0 +1,46 @@
+{% extends "template.html" %}
+{% block conteudo %}
+      <form action="{{ url_for('criar') }}" method="post" enctype="multipart/form-data"> <!-- ult. parametro permite mandar arquivo para o servidor --> 
+
+        <!-- Arquivo associado ao contato-->
+        <figure class="img thumbnail col-md-4">
+          <img class="img-fluid" src="{{url_for('imagem', nome_arquivo='img_padrao.jpg')}}">
+          <figcaption>
+            <label class="fileContainer">
+              Mudar Imagem
+              <input type="file"  name="arquivo" accept=".jpg">
+            </label>
+          </figcaption> 
+        </figure>
+  
+        <fieldset>
+          <div class="form-group">
+           <!-- <label for="nome">Nome</label>
+            <input type="text" id="nome" name="nome" class="form-control"> substituidos por
+          --> 
+            {{form.nome.label(class="form-label")}}
+            {{form.nome(class="form-control")}}
+          </div>
+
+          <div class="form-group">
+            {{form.apelido.label(class="form-label")}}
+            {{form.apelido(class="form-control")}}
+          </div>
+
+          <div class="form-group">
+            {{form.telefone.label(class="form-label")}}
+            {{form.telefone(class="form-control")}}
+          </div>
+
+          <div class="form-group">
+           {{form.email.label(class="form-label")}}
+           {{form.email(class="form-control")}}
+          </div>
+
+          <div>
+           {{form.salvar(class="btn btn-primary")}}
+          </div>
+        </fieldset>
+       <a class="btn btn-danger" href="{{ url_for('index') }}">Voltar</a>
+      </form>
+{% endblock %}
