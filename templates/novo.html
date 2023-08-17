@@ -1,9 +1,9 @@
 {% extends "template.html" %}
 {% block conteudo %}
-      <form action="{{ url_for('criar') }}" method="post" enctype="multipart/form-data"> <!-- ult. parametro permite mandar arquivo para o servidor --> 
+      <form class="formularioContato" action="{{ url_for('criar') }}" method="post" enctype="multipart/form-data"> <!-- ult. parametro permite mandar arquivo para o servidor --> 
 
         <!-- Arquivo associado ao contato-->
-        <figure class="img thumbnail col-md-4">
+        <figure class="img thumbnail col-md-4 formularioImagem">
           <img class="img-fluid" src="{{url_for('imagem', nome_arquivo='img_padrao.jpg')}}">
           <figcaption>
             <label class="fileContainer">
@@ -14,7 +14,8 @@
         </figure>
   
         <fieldset>
-          <div class="form-group">
+          {{ form.csrf_token() }}
+          <div class="form-group inputBox">
            <!-- <label for="nome">Nome</label>
             <input type="text" id="nome" name="nome" class="form-control"> substituidos por
           --> 
@@ -22,25 +23,25 @@
             {{form.nome(class="form-control")}}
           </div>
 
-          <div class="form-group">
+          <div class="form-group inputBox">
             {{form.apelido.label(class="form-label")}}
             {{form.apelido(class="form-control")}}
           </div>
 
-          <div class="form-group">
+          <div class="form-group inputBox">
             {{form.telefone.label(class="form-label")}}
             {{form.telefone(class="form-control")}}
           </div>
 
-          <div class="form-group">
+          <div class="form-group inputBox">
            {{form.email.label(class="form-label")}}
            {{form.email(class="form-control")}}
           </div>
 
-          <div>
+          <div class="form-group buttons">
            {{form.salvar(class="btn btn-primary")}}
+           <a class="btn btn-danger" href="{{ url_for('index') }}">Voltar</a>
           </div>
         </fieldset>
-       <a class="btn btn-danger" href="{{ url_for('index') }}">Voltar</a>
       </form>
 {% endblock %}

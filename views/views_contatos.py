@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, redirect, session, url_for, request, flash, send_from_directory
-from models.tabelas import Contatos, Usuario
+from models.tabelas import Contatos
 from helpers import recupera_imagem, deletar_imagem,  FormularioContato
 import time
 
@@ -17,8 +17,9 @@ def index():
 #adicionar um contato
 @app.route('/novo')
 def novo():
-    '''if 'usuario_logado' not in session or session['usuario_logado'] == None:
-        return redirect(url_for('login', proxima=url_for('novo')))'''
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        return redirect(url_for('login', proxima=url_for('novo')))
+    
     form = FormularioContato()
     return render_template('novo.html', titulo='Novo Contato', form=form)
 
@@ -63,25 +64,35 @@ def criar():
 #editar um contato
 @app.route('/editar/<int:id>') #recebe id de lista.html
 def  editar(id):
-    '''if 'usuario_logado' not in session or session['usuario_logado'] == None:
-        return redirect(url_for('login', proxima=url_for('editar')))'''
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        return redirect(url_for('login', proxima=url_for('editar')))
     
     contato = Contatos.query.filter_by(id=id).first() #busca o contato com o id informado
+
+    form = FormularioContato()
+    form.nome.data = contato.nome
+    form.apelido.data = contato.apelido
+    form.telefone.data = contato.telefone
+    form.email.data = contato.email
+
     img_contato = recupera_imagem(id)
 
-    return render_template('editar.html', titulo='Editar Contato', contato=contato, img_contato=img_contato) #passa o contato p/ editar.html
+    return render_template('editar.html', titulo='Editar Contato', id=id, img_contato=img_contato, form=form) #passa o contato p/ editar.html
 
 
 #atualizar um contato
 @app.route('/atualizar', methods=['POST',])
 def atualizar():
 
-    #para o contato correspondente ao id, atualizar os campos setados com os dados recebidos do request
-    contato = Contatos.query.filter_by(id=request.form['id']).first()
-    contato.nome = request.form['nome']
-    contato.apelido = request.form['apelido']
-    contato.telefone = request.form['telefone']
-    contato.email = request.form['email']
+    form = FormularioContato(request.form)
+
+    if form.validate_on_submit():
+        #para o contato correspondente ao id, atualizar os campos setados com os dados recebidos do request
+        contato = Contatos.query.filter_by(id=request.form['id']).first()
+        contato.nome = form.nome.data
+        contato.apelido = form.apelido.data
+        contato.telefone = form.telefone.data
+        contato.email = form.email.data
    
     #gravar no banco
     db.session.add(contato)
@@ -98,75 +109,13 @@ def atualizar():
 #deletar um contato
 @app.route('/deletar/<int:id>')
 def deletar(id):
-     '''if 'usuario_logado' not in session or session['usuario_logado'] == None:
-        return redirect(url_for('login'))'''
+     if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        return redirect(url_for('login'))
      
      Contatos.query.filter_by(id=id).delete()
      db.session.commit()
      flash('Contato deletado com sucesso! ')
      return redirect(url_for('index'))
-
-
-#VERIFICAR ROTA
-#acesso as paginas
-@app.route('/novo_usuario')
-def novo_usuario():
-    proxima = request.args.get('proxima')
-    return render_template('usuario.html', proxima=proxima)
-    
-
-
-@app.route('/cadastrar_usuario', methods=['POST',])
-def cadastrar_usuario():
-    
-    nome = request.form['usuario']
-    senha = request.form['senha']
-   
-    #buscar se já tem no banco um usuario com o nome fornecido
-    usuario = Usuario.query.filter_by(nome=nome).first()
-
-    if usuario:
-        flash('Usuário já cadastrado! ')
-        return redirect(url_for('login'))
-    
-    #gravar no banco
-    novo_usuario = Usuario(nome=nome, senha=senha)
-    db.session.add(novo_usuario)
-    db.session.commit()
-
-    return redirect(url_for('login'))
-
-
-@app.route('/login')
-def login():
-    proxima = request.args.get('proxima')
-    return render_template('login.html', proxima=proxima)
-
-
-@app.route('/autenticar', methods=['POST',])
-def autenticar():
-
-    
-    usuario = Usuario.query.filter_by(nome=request.form['usuario']).first()
-    print(usuario)
-    
-    if usuario and request.form['senha'] == usuario.senha:
-        session['usuario_logado'] = usuario.nome
-        flash(usuario.nome + ' logado com sucesso!')
-        proxima_pagina = request.form['proxima']
-        return redirect(proxima_pagina)
-    
-    else:
-        flash('Usuário não logado.')
-        return redirect(url_for('login'))
-
-
-
-@app.route('/logout')
-def logout():
-    session['usuario_logado'] = None
-    flash('Logout efetuado com sucesso!')
-    return redirect(url_for('index'))
 
 
 #imagem do contato

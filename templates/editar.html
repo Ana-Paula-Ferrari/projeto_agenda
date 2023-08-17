@@ -1,8 +1,8 @@
 {% extends "template.html" %}
 {% block conteudo %}
-<form action="{{ url_for('atualizar') }}" method="post" enctype="multipart/form-data">
+<form  class="formularioContato" action="{{ url_for('atualizar') }}" method="post" enctype="multipart/form-data">
 
-  <figure class="img thumbnail col-md-4">
+  <figure class="img thumbnail col-md-4 formularioImagem">
     <img class="img-fluid" src="{{ url_for('imagem', nome_arquivo=img_contato) }}">
     <figcaption>
       <label class="fileContainer">
@@ -13,26 +13,32 @@
   </figure>
         
         <fieldset>
-          <input type="hidden" name="id" value="{{ contato.id }}">
-          <div class="form-group">
-            <label for="nome">Nome</label>
-            <input type="text" id="nome" name="nome" class="form-control" value="{{ contato.nome }}">
-          </div>
-          <div class="form-group">
-            <label for="apelido">Apelido</label>
-            <input type="text" id="apelido" name="apelido" class="form-control" value="{{ contato.apelido }}">
-          </div>
-          <div class="form-group">
-            <label for="telefone">Telefone</label>
-            <input type="text" id="telefone" name="telefone" class="form-control" value="{{ contato.telefone }}">
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="text" id="email" name="email" class="form-control" value="{{ contato.email }}">
-          </div>
-          <button type="submit" class="btn btn-primary btn-salvar">Salvar</button>
-          <a class="btn btn-danger" href="{{ url_for('index') }}">Voltar</a>
+          {{ form.csrf_token() }}
+          <input type="hidden" name="id" value="{{ id }}">
+          <div class="form-group inputBox">
+             {{form.nome.label(class="form-label")}}
+             {{form.nome(class="form-control")}}
+           </div>
+ 
+           <div class="form-group inputBox">
+             {{form.apelido.label(class="form-label")}}
+             {{form.apelido(class="form-control")}}
+           </div>
+ 
+           <div class="form-group inputBox">
+             {{form.telefone.label(class="form-label")}}
+             {{form.telefone(class="form-control")}}
+           </div>
+ 
+           <div class="form-group inputBox">
+            {{form.email.label(class="form-label")}}
+            {{form.email(class="form-control")}}
+           </div>
+ 
+           <div class="form-group buttons">
+            {{form.salvar(class="btn btn-primary")}}
+            <a class="btn btn-danger" href="{{ url_for('index') }}">Voltar</a>
+           </div>
         </fieldset>
-
       </form>
 {% endblock %}

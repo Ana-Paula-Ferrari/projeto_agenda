@@ -1,7 +1,7 @@
 import os
 from app import app;
 from flask_wtf import FlaskForm
-from wtforms import StringField, validators, SubmitField
+from wtforms import StringField, validators, SubmitField, PasswordField
 
 
 #validar as informações do formulario
@@ -11,6 +11,16 @@ class FormularioContato(FlaskForm):
     telefone = StringField('Telefone',[validators.DataRequired(), validators.Length(min=3)] )
     email = StringField('E-mail', [validators.DataRequired(), validators.Length(min=7)] )
     salvar = SubmitField('Salvar')
+
+class FormularioUsuario(FlaskForm):
+    nome = StringField('Nome', [validators.DataRequired(), validators.Length(min=3, max=100)])
+    senha =  PasswordField('Senha', [validators.DataRequired(), validators.Length(min=6, max=100)])
+    entrar = SubmitField('Entrar')
+
+class FormularioCadastro(FlaskForm):
+    nome = StringField('Nome', [validators.DataRequired(), validators.Length(min=3, max=100)])
+    senha =  PasswordField('Senha', [validators.DataRequired(), validators.Length(min=6, max=100)])
+    cadastrar = SubmitField('Cadastrar')
 
 #Funçoes auxiliar
 def recupera_imagem(id):
